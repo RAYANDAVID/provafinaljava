@@ -1,82 +1,102 @@
 package br.com.jkalango.view;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+// Importe as classes DTO e Service que você está usando
 import br.com.jkalango.dto.NovoJogador;
 import br.com.jkalango.service.JogadorApiClient;
 
-import javax.swing.JButton;
+public class JCadastroJogador extends JFrame {
 
-//extends é herança
-public class JCadastroJogador extends JFrame{
-    //Construtor inicializa os componentes do formulário
-
+    // 1. Declare TODOS os componentes da tela como campos da classe
+    private JTextField txtNome;
     private JTextField txtNickName;
-    private JLabel lblNickName;
-    public JCadastroJogador(){
-       //Título da Janela 
-       setTitle("Faça parte do JKalango!");
-       //Garante que a aplicação não seja finalizada
-       setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-       //tamanho
-       setSize(400,450);
-       //posição ao centro
-       setLocationRelativeTo(null);
-       setLayout(new FlowLayout(FlowLayout.CENTER,10,10));
-       JLabel lblNome = new JLabel("Nome:");
-       JTextField txtNome = new JTextField(20);
-       //'JPasswordField
-       add(lblNome);
-       add(txtNome);
+    private JButton btnCadastrar;
 
-       // NickName
-        lblNickName = new JLabel("NickName:");
-        lblNickName.setBounds(34, 90, 80, 16); // Ajuste a posição (Y)
-        panel.add(lblNickName);
+    /**
+     * Construtor que inicializa e monta os componentes do formulário.
+     */
+    public JCadastroJogador() {
+        // --- Configurações da Janela ---
+        setTitle("Faça parte do JKalango!");
+        setSize(300, 200); // Ajustei o tamanho para o FlowLayout
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null); // Centraliza a janela
 
-        txtNickName = new JTextField();
-        txtNickName.setBounds(120, 85, 200, 26); // Ajuste a posição (Y)
-        panel.add(txtNickName);
-        txtNickName.setColumns(10);
+        // 2. Configure o Layout Manager
+        // FlowLayout organiza os componentes um após o outro.
+        setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-       JButton btnCadastrar = new JButton("Cadastrar");
-       btnCadastrar.addActionListener(new ActionListener(){
-       
-       String nome = txtNome.getText();  
-       @Override
-    public void actionPerformed(ActionEvent e) {
-        // Crie um objeto com os dados do jogador a partir do formulário
-        NovoJogador novoJogador = new NovoJogador(
-            txtNome.getText(),
-            txtNickName.getText() // <-- Coletando o novo campo
-        );
+        // --- Inicialização dos Componentes ---
 
-        try {
-            JogadorApiClient apiClient = new JogadorApiClient();
-            NovoJogador novojogadorCadastrado = apiClient.cadastrarJogador(novoJogador);
+        // Nome
+        JLabel lblNome = new JLabel("Nome:");
+        txtNome = new JTextField(20); // 'txtNome' agora é um campo da classe
 
-            if (novojogadorCadastrado != null) {
-                JOptionPane.showMessageDialog(null, "Jogador cadastrado com sucesso!");
-                dispose(); // Fecha a janela de cadastro
-            } else {
-                JOptionPane.showMessageDialog(null, "Erro ao cadastrar jogador.", "Erro", JOptionPane.ERROR_MESSAGE);
+        // NickName
+        JLabel lblNickName = new JLabel("NickName:");
+        txtNickName = new JTextField(20); // 'txtNickName' agora é um campo da classe
+
+        // Botão
+        btnCadastrar = new JButton("Cadastrar");
+
+        // --- Adicionando os Componentes na Janela (na ordem que devem aparecer) ---
+        // 3. Removi todas as referências ao 'panel' e 'setBounds'
+        add(lblNome);
+        add(txtNome);
+        add(lblNickName);
+        add(txtNickName);
+        add(btnCadastrar);
+
+        // --- Lógica do Botão ---
+        // 4. Corrigi o ActionListener
+        btnCadastrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nome = txtNome.getText();
+                String nickname = txtNickName.getText();
+        
+                // 1. VALIDAÇÃO MOVIDA PARA O LUGAR CORRETO (A TELA)
+                if (!nome.toLowerCase().contains("java")) {
+                    JOptionPane.showMessageDialog(
+                        JCadastroJogador.this, 
+                        "O nome do jogador precisa conter a palavra 'java'.", 
+                        "Regra de Cadastro", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return; // Para a execução do método aqui se a regra não for atendida
+                }
+        
+                // 2. A CRIAÇÃO DO OBJETO AGORA FUNCIONA, POIS O CONSTRUTOR ESTÁ CORRETO
+                NovoJogador novoJogador = new NovoJogador(nome, nickname);
+        
+                try {
+                    JogadorApiClient apiClient = new JogadorApiClient();
+                    // O código para chamar a API continua o mesmo
+                    NovoJogador jogadorCadastrado = apiClient.cadastrarJogador(novoJogador);
+        
+                    if (jogadorCadastrado != null) {
+                        JOptionPane.showMessageDialog(JCadastroJogador.this, "Jogador cadastrado com sucesso!");
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(JCadastroJogador.this, "Erro ao cadastrar jogador.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (IOException | InterruptedException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(JCadastroJogador.this, "Erro de comunicação com o servidor.", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
-        } catch (IOException | InterruptedException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro de comunicação com o servidor.", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+        });
+
+        // 5. Deixe o 'setVisible(true)' como a última instrução
+        setVisible(true);
     }
-});
-       setVisible(true);
-       add(btnCadastrar);
-    }
-    
 }

@@ -1,9 +1,9 @@
 package br.com.jkalango.service;
 
-import br.com.jkalango.util.DadosCadastroJogador;
-import br.com.jkalango.util.Jogador;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// 1. IMPORTAÇÃO CORRIGIDA
+import br.com.jkalango.dto.NovoJogador; 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,22 +23,23 @@ public class JogadorApiClient {
     /**
      * Envia os dados de um novo jogador para o endpoint de cadastro da API.
      *
-     * @param dados Os dados do jogador a serem cadastrados (nome, nickname, email, etc.).
-     * @return Um objeto Jogador se o cadastro for bem-sucedido (status 200), ou null em caso de falha.
+     * @param dados O objeto NovoJogador contendo os dados a serem cadastrados.
+     * @return Um objeto NovoJogador se o cadastro for bem-sucedido, ou null em caso de falha.
      * @throws IOException          Se ocorrer um erro de entrada/saída durante a comunicação.
      * @throws InterruptedException Se a operação for interrompida.
      */
-    public Jogador cadastrarJogador(DadosCadastroJogador dados) throws IOException, InterruptedException {
+    // 2. TIPO DO PARÂMETRO E DO RETORNO CORRIGIDOS
+    public NovoJogador cadastrarJogador(NovoJogador dados) throws IOException, InterruptedException {
         // Cria um cliente HTTP moderno
         HttpClient client = HttpClient.newHttpClient();
 
-        // Cria um ObjectMapper para converter o objeto Java (DadosCadastroJogador) em uma string JSON
+        // Cria um ObjectMapper para converter o objeto Java (NovoJogador) em uma string JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(dados);
 
         // Constrói a requisição HTTP
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/novos-usuarios")) // Aponta para o novo endpoint
+                .uri(URI.create(BASE_URL + "/novos-usuarios")) // Aponta para o endpoint correto
                 .header("Content-Type", "application/json")   // Define o tipo de conteúdo como JSON
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody)) // Define o método como POST e envia o corpo JSON
                 .build();
@@ -49,9 +50,9 @@ public class JogadorApiClient {
         // Verifica o código de status da resposta
         if (response.statusCode() == 200) {
             System.out.println("Cadastro realizado com sucesso via API!");
-            // Como o novo controller retorna 'void' (vazio), não há um corpo de resposta para converter.
-            // Apenas retornamos um novo objeto Jogador para sinalizar sucesso à interface gráfica.
-            return new Jogador();
+            // Como o controller retorna 'void', não há um corpo de resposta para converter.
+            // Apenas retornamos o mesmo objeto que foi enviado para sinalizar sucesso.
+            return dados;
         } else {
             // Em caso de erro, imprime o status e o corpo da resposta para ajudar na depuração
             System.err.println("Falha no cadastro. Status: " + response.statusCode());
