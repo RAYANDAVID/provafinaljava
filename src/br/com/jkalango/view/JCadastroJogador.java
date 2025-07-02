@@ -33,26 +33,21 @@ public class JCadastroJogador extends JFrame{
        add(txtNome);
        JButton btnCadastrar = new JButton("Cadastrar");
        btnCadastrar.addActionListener(new ActionListener(){
-
-
-
+       
+       String nome = txtNome.getText();  
         @Override
         public void actionPerformed(ActionEvent e) {
-
             NovoJogador jogador = new NovoJogador(txtNome.getText());
-            jogador.verifica(txtNome.getText()); 
-
-            
-            /*if (lblNome == null || txtNome.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null,"Preencha o nome do jogador!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-                
-            }
+            jogador.verificarJava();
             // TODO Auto-generated method stub
-            JOptionPane.showMessageDialog(null,"Jogador cadastrado com sucesso!");        
-        */
+            /*if (txtNome.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "O Campo Não Pode ser Vazio ou Nulo","Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null,"Jogador cadastrado com sucesso!");
+                dispose();
+            } */       
         }
-       
+        
        });
        setVisible(true);
        add(btnCadastrar);

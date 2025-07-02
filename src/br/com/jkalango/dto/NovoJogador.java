@@ -2,11 +2,12 @@ package br.com.jkalango.dto;
 
 import javax.swing.JOptionPane;
 
-import br.com.jkalango.view.JCadastroJogador;
-
-public class NovoJogador extends JCadastroJogador{
-
-    String nome;
+public class NovoJogador {
+    private String nome;
+    
+    public NovoJogador(String nome) {
+        this.nome = nome;
+    }
 
     public String getNome() {
         return nome;
@@ -16,19 +17,13 @@ public class NovoJogador extends JCadastroJogador{
         this.nome = nome;
     }
 
-    public NovoJogador(String string){
-        if (verifica(nome)) {
-            this.nome = nome;
-            JOptionPane.showMessageDialog(null, "Jogador cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        }else {
-            JOptionPane.showMessageDialog(null, "Erro: O nome deve conter a palavra 'java' para ser cadastrado.", "Erro", JOptionPane.ERROR_MESSAGE);
+    public void verificarJava(){
+        if (getNome().toLowerCase().contains("java")) {
+            JOptionPane.showMessageDialog(null,"Jogador cadastrado com sucesso!");
+            System.exit(0);
+        }else{
+            JOptionPane.showMessageDialog(null, "Jogador Não pode ser Cadastrado, precisa conter 'java' no nome.", "ERRO", JOptionPane.ERROR_MESSAGE);
         }
-
     }
-
-    public boolean verifica(String nome) {
-        return nome.toLowerCase().contains("java");
-    }
-
-
+    
 }
